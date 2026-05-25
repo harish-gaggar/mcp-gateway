@@ -1,0 +1,27 @@
+{
+  "date": "2025-05-23",
+  "environment": "localhost, Node.js 20, macOS",
+  "latency": {
+    "iterations": 200,
+    "warmup": 20,
+    "direct": { "mean": 0.377, "p50": 0.343, "p99": 1.095 },
+    "gateway": { "mean": 1.353, "p50": 1.166, "p99": 4.083 },
+    "overheadMs": 0.823,
+    "overheadPct": 239.9
+  },
+  "throughput": {
+    "concurrency": 50,
+    "durationSec": 10,
+    "ok": 33671,
+    "err": 0,
+    "rps": 3367.1,
+    "config": "config.bench.yaml"
+  },
+  "policy": {
+    "rules": 100,
+    "iterations": 100000,
+    "totalMs": 3897.4,
+    "avgUs": 39.0
+  },
+  "tests": { "passed": 10, "failed": 0 }
+}

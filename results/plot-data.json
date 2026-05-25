@@ -1,0 +1,29 @@
+{
+  "policyScaling": [
+    { "rules": 10, "avg_us": 3.72 },
+    { "rules": 25, "avg_us": 9.31 },
+    { "rules": 50, "avg_us": 18.23 },
+    { "rules": 100, "avg_us": 36.29 },
+    { "rules": 200, "avg_us": 72.86 }
+  ],
+  "throughputSweep": [
+    { "workers": 10, "rps": 2981, "duration_sec": 10 },
+    { "workers": 25, "rps": 1677, "duration_sec": 10 },
+    { "workers": 50, "rps": 3699, "duration_sec": 10, "note": "peak run; see artifact logs" }
+  ],
+  "latencySummary": { "direct_p50": 0.28, "gateway_p50": 0.71, "direct_p99": 0.79, "gateway_p99": 1.65 },
+  "latencyHist": {
+    "direct": [118, 22, 6, 1, 1, 1, 0, 1],
+    "gateway": [66, 50, 11, 7, 6, 2, 4, 4],
+    "binLabels": ["0.2", "0.4", "0.6", "0.8", "1.0", "1.2", "1.4", "1.6"]
+  },
+  "tests": {
+    "total": 13,
+    "suites": [
+      { "name": "policy", "count": 4 },
+      { "name": "routing", "count": 3 },
+      { "name": "lifecycle", "count": 3 },
+      { "name": "GAP classifier", "count": 3 }
+    ]
+  }
+}

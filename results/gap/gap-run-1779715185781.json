@@ -1,0 +1,118 @@
+{
+  "run_at": "2026-05-25T13:19:45.780Z",
+  "gateway_url": "http://127.0.0.1:8787/gateway/mcp",
+  "direct_url": "http://127.0.0.1:9101/mcp | http://127.0.0.1:9102/mcp",
+  "results": [
+    {
+      "scenario_id": "allow-fs-team-a",
+      "mode": "gateway",
+      "http_status": 200,
+      "tc_safe": true,
+      "t_safe": true,
+      "gap": false,
+      "latency_ms": 17.267959000000005
+    },
+    {
+      "scenario_id": "allow-fs-team-a",
+      "mode": "direct",
+      "http_status": 200,
+      "tc_safe": true,
+      "t_safe": true,
+      "gap": false,
+      "latency_ms": 2.2341669999999993
+    },
+    {
+      "scenario_id": "deny-db-team-a",
+      "mode": "gateway",
+      "http_status": 403,
+      "tc_safe": true,
+      "t_safe": true,
+      "gap": false,
+      "latency_ms": 2.167500000000004,
+      "jsonrpc_error": "Default deny (no matching rule)"
+    },
+    {
+      "scenario_id": "deny-db-team-a",
+      "mode": "direct",
+      "http_status": 200,
+      "tc_safe": false,
+      "t_safe": true,
+      "gap": true,
+      "latency_ms": 1.738749999999996
+    },
+    {
+      "scenario_id": "gap-divergence-team-a-db",
+      "mode": "gateway",
+      "http_status": 403,
+      "tc_safe": true,
+      "t_safe": true,
+      "gap": false,
+      "latency_ms": 1.7791250000000076,
+      "jsonrpc_error": "Default deny (no matching rule)"
+    },
+    {
+      "scenario_id": "gap-divergence-team-a-db",
+      "mode": "direct",
+      "http_status": 200,
+      "tc_safe": false,
+      "t_safe": true,
+      "gap": true,
+      "latency_ms": 0.9897500000000008
+    },
+    {
+      "scenario_id": "allow-db-team-b",
+      "mode": "gateway",
+      "http_status": 200,
+      "tc_safe": true,
+      "t_safe": true,
+      "gap": false,
+      "latency_ms": 2.7724580000000003
+    },
+    {
+      "scenario_id": "allow-db-team-b",
+      "mode": "direct",
+      "http_status": 200,
+      "tc_safe": true,
+      "t_safe": true,
+      "gap": false,
+      "latency_ms": 1.000708000000003
+    },
+    {
+      "scenario_id": "no-auth",
+      "mode": "gateway",
+      "http_status": 401,
+      "tc_safe": true,
+      "t_safe": false,
+      "gap": false,
+      "latency_ms": 1.6704999999999899,
+      "jsonrpc_error": "Unauthorized"
+    },
+    {
+      "scenario_id": "no-auth",
+      "mode": "direct",
+      "http_status": 200,
+      "tc_safe": false,
+      "t_safe": false,
+      "gap": false,
+      "latency_ms": 1.1373750000000058
+    },
+    {
+      "scenario_id": "list-federated-team-a",
+      "mode": "gateway",
+      "http_status": 404,
+      "tc_safe": false,
+      "t_safe": true,
+      "gap": true,
+      "latency_ms": 1.3879579999999976,
+      "jsonrpc_error": "No route to backend server"
+    }
+  ],
+  "counts": {
+    "total": 11,
+    "tc_safe": 7,
+    "t_safe": 9,
+    "gap": 3,
+    "gap_gateway": 1,
+    "gap_direct": 2
+  }
+}

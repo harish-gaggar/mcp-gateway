@@ -1,0 +1,5 @@
+console.log('Run benchmarks individually:')
+console.log('  npm run bench:latency')
+console.log('  npm run bench:throughput')
+console.log('  npm run bench:policy')
+console.log('Outputs go under results/ when scripts write JSON.')

@@ -1,0 +1,68 @@
+# Example gateway config (two mock backends: fs, db)
+
+gateway:
+  host: 127.0.0.1
+  port: 8787
+  base_path: /gateway
+
+auth:
+  # Static bearer tokens for local tests (see paper for OAuth/JWE pattern)
+  tokens:
+    agent-alpha: principal:team-a
+    agent-beta: principal:team-b
+
+registry:
+  refresh_interval_ms: 30000
+  servers:
+    - id: filesystem
+      endpoint: http://127.0.0.1:9101/mcp
+      namespace: fs
+      capabilities: [tools]
+    - id: database
+      endpoint: http://127.0.0.1:9102/mcp
+      namespace: db
+      capabilities: [tools, resources]
+
+routing:
+  strategy: capability_aware  # static | round_robin | capability_aware
+  cache:
+    enabled: true
+    ttl_ms: 60000
+
+policy:
+  default_effect: deny
+  rules:
+    - id: team-a-discovery
+      principal: team-a
+      effect: allow
+      actions: [tools/list]
+      resources: ["*:*"]
+    - id: team-a-filesystem
+      principal: team-a
+      effect: allow
+      actions: [tools/call]
+      resources: ["fs:*"]
+    - id: team-b-discovery
+      principal: team-b
+      effect: allow
+      actions: [tools/list]
+      resources: ["*:*"]
+    - id: team-b-database
+      principal: team-b
+      effect: allow
+      actions: [tools/call]
+      resources: ["db:*"]
+    - id: deny-dangerous
+      effect: deny
+      actions: [tools/call]
+      resources: ["*:delete_*", "*:drop_*"]
+
+observability:
+  log_level: info
+  metrics_enabled: true
+  trace_sampling: 1.0
+
+limits:
+  max_body_bytes: 1048576
+  request_timeout_ms: 30000
+  rate_limit_rpm: 120
