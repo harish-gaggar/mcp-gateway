@@ -4,16 +4,29 @@ Open research prototype of an MCP gateway: one HTTP entry point in front of mult
 
 Companion paper: [`paper/paper.tex`](paper/paper.tex) (build PDF with `make -C paper paper`).
 
-## Requirements
+## Prerequisites
 
-- Node.js 20+ (see `.nvmrc`)
-- Four terminal tabs/windows for the full demo (two mocks, gateway, then curl/demo)
+Install and confirm these **before** any `npm` commands:
+
+| Tool | Version | Check |
+|------|---------|--------|
+| [Node.js](https://nodejs.org/) | 20 or newer (`engines` in `package.json`) | `node -v` |
+| npm | 10+ (bundled with Node 20) | `npm -v` |
+| git | any recent | `git --version` |
+| curl | any recent | `curl --version` |
+
+Optional but recommended:
+
+- **nvm** (or fnm): `nvm install` / `nvm use` reads `.nvmrc` in the repo root
+- **Docker**: only if you build the paper PDF without a local TeX install (see [Paper](#paper))
+
+For the full demo (mock servers + gateway + client), keep **four terminal tabs** free. Ports **9101**, **9102**, and **8787** must be available on localhost.
 
 ## Install
 
 ```bash
-git clone <your-repo-url>
-cd mcp-gateway-research
+git clone https://github.com/harish-gaggar/mcp-gateway.git
+cd mcp-gateway
 npm install
 ```
 
