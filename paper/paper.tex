@@ -38,8 +38,9 @@
 \newcommand{\mcpshield}{MCPShield}
 \newcommand{\seagent}{SEAgent}
 \newcommand{\agentguardian}{AgentGuardian}
+\newcommand{\mcpcp}{federated MCP control plane}
 
-\title{MCP Gateway: Secure Federated Access to Enterprise Tool Servers}
+\title{Federated MCP Control Plane: Policy-Aware Access to Multi-Backend Tool Servers}
 
 \author{Harish Gaggar\\
   Intuit Inc., Mountain View, CA, USA\\
@@ -53,7 +54,7 @@
 \begin{abstract}
 \noindent
 The Model Context Protocol (MCP) enables agents to call tools on remote servers, but it does not specify how enterprises expose many backends through one auditable entry point, enforce tenant isolation on tool names, or keep upstream credentials off the agent host.
-We define that missing \emph{control plane} as an MCP Gateway: a single URL where every request is authenticated, rate-limited, authorized on MCP methods and tool resources, then routed or answered from a federated catalog.
+We define that missing \emph{control plane} as a \mcpcp{}: a single URL where every request is authenticated, rate-limited, authorized on MCP methods and tool resources, then routed or answered from a federated catalog.
 The paper gives reusable material others can adopt: a reference OAuth/JWE architecture, a cross-method attribute-based access control (ABAC) model, a documented threat model, and an open research implementation with benchmarks.
 On a public testbed, 13/13 automated tests pass; median \code{tools/call} overhead is 0.43\,ms; peak throughput is 3{,}699 requests per second; policy evaluation scales linearly to 72.9\,$\mu$s at 200 rules; and a GAP-style harness shows forbidden cross-tenant calls blocked at the gateway (HTTP 403) but not on a direct path.
 Evaluation is limited to loopback measurements without live frontier models; the artifact documents extension protocols for TLS, WAN, and agent-level studies.
@@ -111,7 +112,7 @@ Provide one gateway endpoint that (i)~authenticates the agent, (ii)~evaluates po
 \subsection{Solution outline}
 \label{sec:solution}
 
-We address the problem in Section~\ref{sec:problem} with one \emph{MCP Gateway}: a single URL that sits between agents and many MCP backends.
+We address the problem in Section~\ref{sec:problem} with one \mcpcp{}: a single URL that sits between agents and many MCP backends.
 Agents never talk to each backend directly; every JSON-RPC request follows the same pipeline in Figure~\ref{fig:flow}.
 First the gateway identifies the caller, then applies rate limits, then runs policy \emph{before} any upstream contact.
 If the call is allowed, routing selects the backend (using qualified names such as \code{namespace:tool}); for discovery, the gateway can return one merged \code{tools/list} instead of many separate catalogs.
@@ -121,7 +122,7 @@ The paper connects that idea to material others can reuse in four steps, from de
 \begin{enumerate}[leftmargin=*, itemsep=0.25em]
   \item \textbf{Reference architecture} (Section~\ref{sec:ref-arch}) documents how operators usually implement the gateway: OAuth at the edge, short-lived JWE credentials for agents (upstream tokens stay at the gateway), namespace proxying to backends, Redis-backed session state, and OpenTelemetry-friendly tracing for audits.
   \item \textbf{Policy and threat model} (Sections~\ref{sec:policy}, \ref{sec:threat}) turns the pipeline into concrete rules and risks: deny-override attribute-based access control (ABAC), a threat table aligned with \mcpshield~\cite{mcpshieldFormal2026}, and Table~\ref{tab:compare}, which shows how argument-level systems (\aegis, Progent) and workflow controls (\seagent) complement rather than replace the outer gateway.
-  \item \textbf{Open prototype} (repository \code{mcp-gateway-research}) implements the same lifecycle on a federated \code{/gateway/mcp} endpoint with YAML policy and a cached catalog, so readers can run the design rather than infer it from diagrams alone.
+  \item \textbf{Open prototype} (repository \code{mcp-gateway}) implements the same lifecycle on a federated \code{/gateway/mcp} endpoint with YAML policy and a cached catalog, so others can run the design rather than infer it from diagrams alone.
   \item \textbf{Evaluation kit} (Section~\ref{sec:eval}) attaches tests and scripts to that prototype: correctness suites, latency and throughput microbenchmarks, a GAP-style cross-tenant harness, and Table~\ref{tab:scope}, which separates what we measured on loopback from planned TLS, WAN, and live-agent extensions.
 \end{enumerate}
 
@@ -147,7 +148,9 @@ Benchmarks inform agent quality; they do not replace the gateway gaps in Section
 REST gateways~\cite{richardson2007rest} and Envoy~\cite{howard2019envoy} terminate TLS, route HTTP paths, and apply coarse auth.
 They were not designed to merge MCP \code{tools/list} results or to authorize \code{namespace:tool} inside a JSON-RPC body.
 MCP~\cite{anthropic2024mcp} defines the protocol between client and server; it intentionally stops short of multi-tenant federation and org-wide policy.
-Our contribution is architectural material for that layer, not a change to the MCP spec.
+Brett~\cite{brett2025mcpgateway} surveys simplified, security-oriented MCP gateways for enterprise AI integration (tunneling, intrusion detection, self-hosting).
+That line of work complements ours: we emphasize federated \code{tools/list}, deny-override ABAC on tool resources, and an open evaluation artifact rather than a simplified secure tunnel alone.
+Our contribution is architectural material for the control-plane layer, not a change to the MCP spec.
 
 \subsection{Security and governance for agents}
 
@@ -188,7 +191,7 @@ Workflow MAC & No & No & Partial & Yes \\
 \toprule
 Work & Entry control & Tool ABAC & Args & Workflow & Formal model \\
 \midrule
-MCP Gateway (this paper) & Yes & Yes & No & Hook & Threat table \\
+Federated MCP control plane (this work) & Yes & Yes & No & Hook & Threat table \\
 \aegis{} / Progent & Partial & No & Yes & No & No \\
 \mcpshield & Partial & Partial & Partial & Partial & Yes \\
 \seagent & No & Partial & No & Yes & MAC \\
@@ -484,7 +487,7 @@ Adding a backend is a configuration change; agents keep the same gateway URL and
 \subsection{Open Research Prototype}
 \label{sec:research-proto}
 
-The repository \code{mcp-gateway-research} lets others reproduce Section~\ref{sec:design} without standing up OAuth first.
+The repository \code{mcp-gateway} lets others reproduce Section~\ref{sec:design} without standing up OAuth first.
 It implements the same lifecycle as Figure~\ref{fig:flow} but uses static bearer tokens in place of JWEs for automated tests.
 
 \textbf{Same as the reference design.}

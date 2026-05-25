@@ -1,6 +1,8 @@
-# mcp-gateway-research
+# Federated MCP Control Plane
 
-Open research prototype of an MCP gateway: one HTTP entry point in front of multiple MCP backends, with federated `tools/list`, qualified tool names (`namespace:tool`), and deny-override ABAC before any upstream call.
+Open research prototype of a **federated MCP control plane** (not a generic “MCP gateway” paper): one HTTP entry point in front of multiple MCP backends, with federated `tools/list`, qualified tool names (`namespace:tool`), and deny-override ABAC before any upstream call.
+
+Related arXiv work on simplified secure MCP gateways (Brett, arXiv:2504.19997) focuses on tunneling and self-hosting; this project centers on **policy, catalog federation, and reproducible evaluation**.
 
 Companion paper: [`paper/paper.tex`](paper/paper.tex) (build PDF with `make -C paper paper`).
 
@@ -73,7 +75,7 @@ npx tsx examples/mock-mcp-server.ts --port 9102 --namespace db
 npm run dev
 ```
 
-You should see `Mock MCP server [fs] on http://127.0.0.1:9101/mcp`, the same for `db` on 9102, and `MCP Gateway Research listening on http://127.0.0.1:8787`.
+You should see `Mock MCP server [fs] on http://127.0.0.1:9101/mcp`, the same for `db` on 9102, and `Federated MCP control plane listening on http://127.0.0.1:8787`.
 
 If a port is already in use (`EADDRINUSE`), free 9101, 9102, and 8787. On macOS, `lsof` takes one port per `-i` flag:
 

@@ -68,7 +68,7 @@ export function startServer(
 ): ReturnType<typeof serve> {
   const { host, port } = config.gateway
   return serve({ fetch: app.fetch, hostname: host, port }, (info) => {
-    console.log(`MCP Gateway Research listening on http://${info.address}:${info.port}`)
+    console.log(`Federated MCP control plane listening on http://${info.address}:${info.port}`)
   })
 }
 

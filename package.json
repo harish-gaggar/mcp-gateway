@@ -1,7 +1,7 @@
 {
-  "name": "mcp-gateway-research",
+  "name": "federated-mcp-control-plane",
   "version": "0.1.0",
-  "description": "MCP gateway prototype with federated tools/list and ABAC",
+  "description": "Federated MCP control plane with tools/list aggregation and ABAC",
   "type": "module",
   "engines": {
     "node": ">=20"

@@ -1,5 +1,5 @@
 {
-  "$schema": "GAP-style evaluation scenarios for MCP Gateway (sketch)",
+  "$schema": "GAP-style evaluation scenarios for federated MCP control plane (sketch)",
   "description": "Simulated agent turns with optional textual refusal and a tool call. Harness checks TC-safe (call blocked or allowed per policy). No live LLM; see README and paper.",
   "scenarios": [
     {
