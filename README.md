@@ -21,7 +21,7 @@ npm install
 
 ```bash
 npm test                                    # 14 tests, no servers
-# Terminal 1–2: mock MCP on 9101 (fs) and 9102 (db)
+# Terminals 1-2: mock MCP on 9101 (fs) and 9102 (db)
 # Terminal 3:   npm run dev                 # gateway on 8787
 npm run example:demo                        # tools/list + tools/call → HTTP 200
 ```
@@ -30,7 +30,7 @@ Details, port cleanup, GAP eval, and benchmarks: **Verify** below.
 
 ## Verify (recommended before publishing or after changes)
 
-### Step 1 — Unit and integration tests (no servers required)
+### Step 1: Unit and integration tests (no servers required)
 
 ```bash
 npm test
@@ -38,23 +38,23 @@ npm test
 
 Expected: `14 passed` across 4 files (`policy`, `routing`, `lifecycle`, `gap-classify`).
 
-### Step 2 — Start mock backends and gateway
+### Step 2: Start mock backends and gateway
 
 Use **three** terminals from the repo root.
 
-**Terminal A — filesystem mock (port 9101):**
+**Terminal A: filesystem mock (port 9101)**
 
 ```bash
 npx tsx examples/mock-mcp-server.ts --port 9101 --namespace fs
 ```
 
-**Terminal B — database mock (port 9102):**
+**Terminal B: database mock (port 9102)**
 
 ```bash
 npx tsx examples/mock-mcp-server.ts --port 9102 --namespace db
 ```
 
-**Terminal C — gateway (port 8787):**
+**Terminal C: gateway (port 8787)**
 
 ```bash
 npm run dev
@@ -72,7 +72,7 @@ done
 
 Or pick other ports and update `registry.servers` / `gateway.port` in `config.example.yaml`.
 
-**Terminal D — checks:**
+**Terminal D: checks**
 
 ```bash
 curl -s http://127.0.0.1:8787/health
@@ -86,7 +86,7 @@ Expected demo output:
 - `tools/list` → **HTTP 200** with merged tools (`fs:read_file`, `fs:write_file`, `db:…`)
 - `tools/call` for `fs:read_file` → **HTTP 200** with a text result
 
-**Optional — GAP-style harness** (gateway + mocks must still be running):
+**Optional: GAP-style harness** (gateway and mocks must still be running):
 
 ```bash
 npm run eval:gap
@@ -94,7 +94,7 @@ npm run eval:gap
 
 Expected: summary JSON with `gap_direct` ≥ 1 (forbidden call succeeds on direct path) and gateway path blocking cross-tenant `db` access for `team-a`.
 
-**Optional — benchmarks** (same prerequisites):
+**Optional: benchmarks** (same prerequisites):
 
 ```bash
 npm run bench:latency
