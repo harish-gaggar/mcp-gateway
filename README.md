@@ -1,4 +1,4 @@
-# Federated MCP Control Plane
+# Federated MCP Control Plane/Gateway
 
 Research prototype and paper for an MCP control plane: one HTTP entry point in front of multiple backends, federated `tools/list`, qualified tool names (`namespace:tool`), and deny-override ABAC before upstream calls.
 
