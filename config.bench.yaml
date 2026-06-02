@@ -1,4 +1,4 @@
-# Benchmark configuration — elevated rate limits for throughput measurement
+# Benchmark configuration: elevated rate limits for throughput measurement
 gateway:
   host: 127.0.0.1
   port: 8787

@@ -54,7 +54,7 @@ async function main() {
   const overheadMs = gatewayStats.p50 - directStats.p50
   const overheadPct = (overheadMs / directStats.p50) * 100
 
-  console.log('\n--- Results ---')
+  console.log('\nResults:')
   console.log(JSON.stringify({ direct: directStats, gateway: gatewayStats, overheadMs, overheadPct }, null, 2))
 }
 

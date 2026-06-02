@@ -4,3 +4,7 @@ dist/
 .env.*
 *.log
 .DS_Store
+
+# Local paper drafts and IEEE template (not for repo)
+paper/
+ieee_template/TAI_LaTex_Template/

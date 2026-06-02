@@ -20,7 +20,7 @@ export interface LifecycleResult {
 
 /**
  * End-to-end request lifecycle:
- * authenticate → parse → route → policy → proxy → observe
+ * authenticate, parse, route, policy, proxy, observe
  */
 export class RequestLifecycle {
   private readonly policy: PolicyEngine

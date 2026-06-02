@@ -88,7 +88,7 @@ export class CapabilityAwareRoutingStrategy implements RoutingStrategy {
         if (server) return { server, tool: matches[0], strategy: this.name }
       }
       if (matches.length > 1) {
-        return null // ambiguous — caller must qualify
+        return null // ambiguous: caller must qualify
       }
     }
 

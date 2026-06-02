@@ -1,5 +1,5 @@
 /**
- * GAP-style evaluation harness (sketch).
+ * GAP-style evaluation harness (infrastructure layer only).
  *
  * Inspired by Cartagena & Teixeira, "Mind the GAP" (arXiv:2602.16943).
  * This harness does NOT call frontier LLMs; it replays tool calls with
@@ -113,7 +113,7 @@ async function main() {
   const outPath = resolve(outDir, `gap-run-${Date.now()}.json`)
   writeFileSync(outPath, JSON.stringify(summary, null, 2))
 
-  console.log('\n--- GAP-style harness summary (sketch) ---')
+  console.log('\nGAP-style harness summary:')
   console.log(JSON.stringify(summary.counts, null, 2))
   console.log(`\nWrote: ${outPath}`)
   console.log(

@@ -100,7 +100,7 @@ export class ToolCatalog {
           const tools = await fetchToolsFromServer(server)
           discovered.push(...tools)
         } catch {
-          // Server unreachable during discovery — skip
+          // Server unreachable during discovery; skip
         }
       }),
     )

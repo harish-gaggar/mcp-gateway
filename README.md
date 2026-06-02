@@ -1,28 +1,23 @@
 # Federated MCP Control Plane
 
-Open research prototype of a **federated MCP control plane** (not a generic “MCP gateway” paper): one HTTP entry point in front of multiple MCP backends, with federated `tools/list`, qualified tool names (`namespace:tool`), and deny-override ABAC before any upstream call.
+Research prototype and paper for an MCP control plane: one HTTP entry point in front of multiple backends, federated `tools/list`, qualified tool names (`namespace:tool`), and deny-override ABAC before upstream calls.
 
-Related arXiv work on simplified secure MCP gateways (Brett, arXiv:2504.19997) focuses on tunneling and self-hosting; this project centers on **policy, catalog federation, and reproducible evaluation**.
+Paper source: [`paper/paper.tex`](paper/paper.tex). arXiv upload bundle: [`paper/arxiv-submission.tar.gz`](paper/arxiv-submission.tar.gz).
 
-Companion paper: [`paper/paper.tex`](paper/paper.tex) (build PDF with `make -C paper paper`).
+Related work: Brett (arXiv:2504.19997) covers simplified secure MCP gateways and tunneling; this repo focuses on catalog federation, tool-level policy, and benchmarks.
 
 ## Prerequisites
 
-Install and confirm these **before** any `npm` commands:
-
 | Tool | Version | Check |
 |------|---------|--------|
-| [Node.js](https://nodejs.org/) | 20 or newer (`engines` in `package.json`) | `node -v` |
-| npm | 10+ (bundled with Node 20) | `npm -v` |
+| [Node.js](https://nodejs.org/) | 20+ | `node -v` |
+| npm | 10+ | `npm -v` |
 | git | any recent | `git --version` |
 | curl | any recent | `curl --version` |
 
-Optional but recommended:
+Optional: **nvm** (`nvm use` reads `.nvmrc`); **Docker** for building the PDF without local TeX (see [Paper](#paper)).
 
-- **nvm** (or fnm): `nvm install` / `nvm use` reads `.nvmrc` in the repo root
-- **Docker**: only if you build the paper PDF without a local TeX install (see [Paper](#paper))
-
-For the full demo (mock servers + gateway + client), keep **four terminal tabs** free. Ports **9101**, **9102**, and **8787** must be available on localhost.
+For the full demo you need four terminal tabs. Ports **9101**, **9102**, and **8787** must be free on localhost.
 
 ## Install
 
@@ -32,52 +27,45 @@ cd mcp-gateway
 npm install
 ```
 
-## TL;DR
+## Quick check
 
 ```bash
-npm test                                    # 14 tests, no servers
-# Terminals 1-2: mock MCP on 9101 (fs) and 9102 (db)
-# Terminal 3:   npm run dev                 # gateway on 8787
-npm run example:demo                        # tools/list + tools/call → HTTP 200
-```
-
-Details, port cleanup, GAP eval, and benchmarks: **Verify** below.
-
-## Verify (recommended before publishing or after changes)
-
-### Step 1: Unit and integration tests (no servers required)
-
-```bash
+npm install
 npm test
 ```
 
-Expected: `14 passed` across 4 files (`policy`, `routing`, `lifecycle`, `gap-classify`).
+Expected: `14 passed` in four test files (`policy`, `routing`, `lifecycle`, `gap-classify`). These are the correctness claims in Section~V of the paper.
 
-### Step 2: Start mock backends and gateway
+## Run the demo
 
-Use **three** terminals from the repo root.
-
-**Terminal A: filesystem mock (port 9101)**
+**Terminal 1 (filesystem mock, port 9101):**
 
 ```bash
 npx tsx examples/mock-mcp-server.ts --port 9101 --namespace fs
 ```
 
-**Terminal B: database mock (port 9102)**
+**Terminal 2 (database mock, port 9102):**
 
 ```bash
 npx tsx examples/mock-mcp-server.ts --port 9102 --namespace db
 ```
 
-**Terminal C: gateway (port 8787)**
+**Terminal 3 (gateway, port 8787):**
 
 ```bash
 npm run dev
 ```
 
-You should see `Mock MCP server [fs] on http://127.0.0.1:9101/mcp`, the same for `db` on 9102, and `Federated MCP control plane listening on http://127.0.0.1:8787`.
+**Terminal 4:**
 
-If a port is already in use (`EADDRINUSE`), free 9101, 9102, and 8787. On macOS, `lsof` takes one port per `-i` flag:
+```bash
+curl -s http://127.0.0.1:8787/health
+npm run example:demo
+```
+
+Expected: `tools/list` and `tools/call` both return HTTP 200. Demo uses bearer `agent-alpha` (maps to `team-a` in `config.example.yaml`).
+
+If you see `EADDRINUSE`, free the ports (macOS):
 
 ```bash
 for port in 9101 9102 8787; do
@@ -85,41 +73,27 @@ for port in 9101 9102 8787; do
 done
 ```
 
-Or pick other ports and update `registry.servers` / `gateway.port` in `config.example.yaml`.
-
-**Terminal D: checks**
-
-```bash
-curl -s http://127.0.0.1:8787/health
-# {"status":"ok"}
-
-npm run example:demo
-```
-
-Expected demo output:
-
-- `tools/list` → **HTTP 200** with merged tools (`fs:read_file`, `fs:write_file`, `db:…`)
-- `tools/call` for `fs:read_file` → **HTTP 200** with a text result
-
-**Optional: GAP-style harness** (gateway and mocks must still be running):
+**Optional** (with mocks and gateway still running):
 
 ```bash
 npm run eval:gap
-```
-
-Expected: summary JSON with `gap_direct` ≥ 1 (forbidden call succeeds on direct path) and gateway path blocking cross-tenant `db` access for `team-a`.
-
-**Optional: benchmarks** (same prerequisites):
-
-```bash
 npm run bench:latency
 npm run bench:throughput
 npm run bench:policy
 ```
 
-Writes under `results/` (gitignored).
+Benchmark output goes under `results/` (gitignored).
 
-Config: `config.example.yaml` (gateway `http://127.0.0.1:8787`, mocks on 9101/9102). Demo token: `agent-alpha` → `team-a` (see `auth.tokens` in that file).
+## Reproducing the paper (Section V)
+
+| Claim | Command |
+|-------|---------|
+| Correctness (14 tests) | `npm test` |
+| Federated demo / lifecycle | [Run the demo](#run-the-demo) + `npm run example:demo` |
+| GAP cross-tenant harness | `npm run eval:gap` |
+| Latency / throughput / policy plots | `npm run bench:latency`, `bench:throughput`, `bench:policy` |
+
+Raw benchmark series are written to `results/` (see `bench/generate-plot-data.ts`). IEEE two-column PDF: `cd paper/ieee && node sync-content.mjs && tectonic paper.tex` ([Tectonic](https://tectonic-typesetting.github.io/) required). arXiv PDF: `cd paper && make paper`.
 
 ## HTTP API
 
@@ -127,13 +101,13 @@ Config: `config.example.yaml` (gateway `http://127.0.0.1:8787`, mocks on 9101/91
 |------|--------|-------------|
 | `/health` | GET | Liveness |
 | `/gateway/mcp` | POST | Federated MCP (JSON-RPC) |
-| `/gateway/:namespace/mcp` | POST | Single-namespace MCP |
-| `/gateway/metrics` | GET | Recent latency breakdown |
-| `/gateway/servers` | GET | Registry / health state |
+| `/gateway/:namespace/mcp` | POST | Namespace-scoped MCP |
+| `/gateway/metrics` | GET | Latency snapshot |
+| `/gateway/servers` | GET | Registry state |
 
-## Policy example
+## Policy (example)
 
-`team-a` may call `fs:*` tools; `team-b` may call `db:*`. Federated `tools/list` uses resource `*:*` in config so discovery works on `/gateway/mcp`. Default effect is deny.
+`team-a` may call `fs:*`; `team-b` may call `db:*`. Federated `tools/list` uses `*:*` in the rules below. Default effect is deny.
 
 ```yaml
 policy:
@@ -157,51 +131,32 @@ policy:
       resources: ["db:*"]
 ```
 
-Bearer tokens in `auth.tokens` map to principals (local testing only; the paper describes OAuth/JWE for deployments).
+Bearer tokens in config are for local tests only; the paper describes OAuth/JWE for deployments.
 
-## Request path
-
-1. Authenticate bearer → principal  
-2. Rate limit  
-3. Evaluate policy on MCP method + resource  
-4. For federated `tools/list`, merge catalogs; otherwise route to one backend  
-5. Proxy JSON-RPC (rewrite qualified names for upstream)
-
-## Layout
+## Repository layout
 
 ```
-src/           gateway, policy, routing, registry, proxy
-test/          Vitest
-bench/         latency, throughput, policy scripts
-eval/gap/      GAP-style scenario runner
-examples/      mock MCP server + demo client
-paper/         LaTeX source
+src/        gateway, policy, routing, registry, proxy
+test/       Vitest
+bench/      latency, throughput, policy scripts
+eval/gap/   cross-tenant safety harness
+examples/   mock MCP server and demo client
+paper/      LaTeX and arxiv-submission.tar.gz
 ```
-
-## Configuration
-
-| File | Use |
-|------|-----|
-| `config.example.yaml` | Dev, tests, GAP eval |
-| `config.bench.yaml` | Higher rate limits for throughput |
 
 ## Paper
-
-With a local TeX install:
 
 ```bash
 cd paper && make paper
 ```
 
-Without TeX, from the `paper/` directory:
+Or with Docker (from `paper/`):
 
 ```bash
 docker run --rm -v "$PWD":/work -w /work texlive/texlive:latest \
   sh -c "pdflatex paper.tex && bibtex paper && pdflatex paper.tex && pdflatex paper.tex"
 ```
 
-Output: `paper/paper.pdf`.
-
 ## Citation
 
-If you use this code or design, cite the accompanying paper (`paper/paper.tex`).
+Cite the accompanying paper (`paper/paper.tex`).
